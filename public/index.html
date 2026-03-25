@@ -257,7 +257,7 @@
 // ===== SUPABASE INIT =====
 const SUPABASE_URL = 'https://rbdowedrdhtlbngapexj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJiZG93ZWRyZGh0bGJuZ2FwZXhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5NTQ2MjIsImV4cCI6MjA4NDUzMDYyMn0.gWyBd5wIsbcjD0lEpazvwKL-UcWU0TCc5K-IckUjwws';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ===== AUTH =====
 async function handleLogin() {
@@ -267,7 +267,7 @@ async function handleLogin() {
   const err = document.getElementById('loginError');
   btn.disabled = true; btn.textContent = 'Signing in...'; err.style.display = 'none';
 
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
   if (error) {
     err.textContent = error.message; err.style.display = 'block';
     btn.disabled = false; btn.textContent = 'Sign In';
@@ -277,13 +277,13 @@ async function handleLogin() {
 }
 
 async function handleLogout() {
-  await supabase.auth.signOut();
+  await sb.auth.signOut();
   document.getElementById('dashboardScreen').style.display = 'none';
   document.getElementById('loginScreen').style.display = 'flex';
 }
 
 async function checkSession() {
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await sb.auth.getSession();
   if (session) { showDashboard(); }
 }
 
@@ -326,10 +326,10 @@ async function loadDashboardData() {
   try {
     // Parallel queries
     const [batchRes, socialRes, blogRes, videoRes] = await Promise.all([
-      supabase.from('content_batches').select('*').order('batch_week', { ascending: false }),
-      supabase.from('social_posts').select('id, platform, content_type, content_pillar, status, scheduled_date, scheduled_time, caption, freebie_keyword, freebie_name').order('scheduled_date').order('scheduled_time'),
-      supabase.from('blog_posts').select('id, title, category, content_pillar, status, scheduled_at, freebie_keyword, freebie_name, word_count'),
-      supabase.from('video_scripts').select('id, title, format, platform, content_pillar, status, scheduled_date, freebie_keyword, freebie_name, duration_seconds')
+      sb.from('content_batches').select('*').order('batch_week', { ascending: false }),
+      sb.from('social_posts').select('id, platform, content_type, content_pillar, status, scheduled_date, scheduled_time, caption, freebie_keyword, freebie_name').order('scheduled_date').order('scheduled_time'),
+      sb.from('blog_posts').select('id, title, category, content_pillar, status, scheduled_at, freebie_keyword, freebie_name, word_count'),
+      sb.from('video_scripts').select('id, title, format, platform, content_pillar, status, scheduled_date, freebie_keyword, freebie_name, duration_seconds')
     ]);
 
     dashData.batches = batchRes.data || [];
