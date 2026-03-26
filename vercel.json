@@ -4,6 +4,12 @@
   "outputDirectory": "public",
   "framework": null,
   "rewrites": [
+    { "source": "/auth/twitter/callback", "destination": "https://rbdowedrdhtlbngapexj.supabase.co/functions/v1/twitter-callback" },
+    { "source": "/auth/twitter", "destination": "https://rbdowedrdhtlbngapexj.supabase.co/functions/v1/twitter-auth" },
+    { "source": "/webhooks/twitter", "destination": "https://rbdowedrdhtlbngapexj.supabase.co/functions/v1/twitter-webhook" },
+    { "source": "/auth/linkedin/callback", "destination": "https://rbdowedrdhtlbngapexj.supabase.co/functions/v1/linkedin-callback" },
+    { "source": "/auth/facebook/callback", "destination": "https://rbdowedrdhtlbngapexj.supabase.co/functions/v1/facebook-callback" },
+    { "source": "/auth/tiktok/callback", "destination": "https://rbdowedrdhtlbngapexj.supabase.co/functions/v1/tiktok-callback" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
