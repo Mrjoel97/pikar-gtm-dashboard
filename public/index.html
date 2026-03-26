@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pikar AI â GTM Command Center</title>
+<title>Pikar AI &#x2665; GTM Command Center</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2356ab91'/><text x='50%25' y='55%25' dominant-baseline='central' text-anchor='middle' font-weight='800' font-size='18' fill='white' font-family='sans-serif'>P</text></svg>">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
@@ -36,12 +36,13 @@
   .header-left { display: flex; align-items: center; gap: 12px; }
   .header-title { font-weight: 700; font-size: 18px; }
   .header-sub { color: var(--text-muted); font-size: 12px; }
-  .header-right { display: flex; align-items: center; gap: 12px; }
+  .header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   .status-badge { background: rgba(16,185,129,0.13); color: var(--success); padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; }
   .logout-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 6px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; transition: all 0.2s; }
   .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
   .refresh-btn { background: none; border: 1px solid var(--border); color: var(--primary); padding: 6px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; transition: all 0.2s; }
   .refresh-btn:hover { background: rgba(86,171,145,0.1); }
+  .last-refresh { color: var(--text-muted); font-size: 12px; white-space: nowrap; }
 
   .tabs { display: flex; gap: 0; padding: 0 32px; background: var(--card); border-bottom: 1px solid var(--border); overflow-x: auto; }
   .tab { background: none; border: none; color: var(--text-muted); padding: 12px 20px; font-size: 14px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
@@ -50,6 +51,19 @@
 
   .content { padding: 24px 32px; max-width: 1200px; margin: 0 auto; }
   .tab-panel { display: none; } .tab-panel.active { display: block; }
+
+  /* TODAY ACTION PANEL */
+  .today-panel { background: linear-gradient(135deg, rgba(86,171,145,0.12) 0%, rgba(4,120,87,0.08) 100%); border: 1px solid rgba(86,171,145,0.3); border-radius: 14px; padding: 20px 24px; margin-bottom: 24px; }
+  .today-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+  .today-title { font-size: 20px; font-weight: 700; color: var(--primary); }
+  .today-date { color: var(--text-muted); font-size: 14px; font-weight: 500; }
+  .today-cards { display: flex; gap: 12px; flex-wrap: wrap; }
+  .today-card { background: rgba(15,23,42,0.6); border: 1px solid rgba(86,171,145,0.2); border-radius: 10px; padding: 14px 18px; flex: 1; min-width: 120px; text-align: center; }
+  .today-card-value { font-size: 28px; font-weight: 800; line-height: 1.1; margin-bottom: 2px; }
+  .today-card-label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+  .today-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; align-items: center; }
+  .btn-review { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; border: none; border-radius: 8px; padding: 8px 18px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+  .btn-review:hover { opacity: 0.85; }
 
   .cards-row { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
   .stat-card { background: var(--card); border-radius: 12px; padding: 20px 24px; border: 1px solid var(--border); flex: 1; min-width: 160px; }
@@ -82,12 +96,70 @@
 
   .targets-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; }
 
+  /* WEEKLY PROGRESS SECTION */
+  .weekly-progress-section { margin-bottom: 24px; }
+  .overall-progress { background: var(--card); border-radius: 12px; padding: 20px; border: 1px solid var(--border); margin-bottom: 16px; }
+  .overall-pct { font-size: 36px; font-weight: 800; color: var(--primary); }
+  .overall-meta { color: var(--text-muted); font-size: 13px; margin-bottom: 12px; }
+  .platform-progress-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .platform-progress-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  .platform-progress-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .platform-progress-name { font-weight: 700; font-size: 14px; }
+  .platform-progress-pct { font-size: 12px; font-weight: 600; }
+  .pillar-bars-section { background: var(--card); border-radius: 12px; padding: 20px; border: 1px solid var(--border); margin-top: 16px; }
+  .pillar-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .pillar-bar-label { width: 150px; font-size: 13px; font-weight: 500; flex-shrink: 0; }
+  .pillar-bar-track { flex: 1; background: var(--bg); border-radius: 6px; height: 10px; overflow: hidden; }
+  .pillar-bar-fill { height: 100%; border-radius: 6px; transition: width 0.5s ease; }
+  .pillar-bar-count { width: 36px; text-align: right; font-size: 13px; font-weight: 600; color: var(--text-muted); }
+
+  /* FREEBIE SECTION */
+  .freebie-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .freebie-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .freebie-keyword { font-size: 20px; font-weight: 800; color: var(--primary); margin-bottom: 2px; }
+  .freebie-name { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; line-height: 1.3; }
+  .freebie-count { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+  .freebie-platforms { display: flex; flex-wrap: wrap; gap: 4px; }
+  .freebie-platform-badge { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: rgba(86,171,145,0.12); color: var(--primary); text-transform: uppercase; }
+
+  /* CALENDAR FILTER BAR */
+  .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; padding: 14px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
+  .filter-bar select { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 7px 12px; font-size: 13px; outline: none; cursor: pointer; min-width: 130px; transition: border-color 0.2s; }
+  .filter-bar select:focus { border-color: var(--primary); }
+  .filter-count { margin-left: auto; color: var(--text-muted); font-size: 13px; font-weight: 500; white-space: nowrap; }
+  .filter-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-right: 2px; }
+
+  /* REVIEW TAB */
+  .review-filter-bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; padding: 14px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
+  .review-filter-bar select, .review-filter-bar input { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 7px 12px; font-size: 13px; outline: none; cursor: pointer; transition: border-color 0.2s; }
+  .review-filter-bar select:focus, .review-filter-bar input:focus { border-color: var(--primary); }
+  .review-filter-bar input { flex: 1; min-width: 180px; cursor: text; }
+  .review-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
+  .review-count { font-size: 14px; color: var(--text-muted); font-weight: 500; }
+  .btn-approve-all { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-approve-all:hover { background: rgba(16,185,129,0.25); }
+
+  .review-post { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 12px; transition: opacity 0.3s, transform 0.3s; }
+  .review-post.removing { opacity: 0; transform: translateX(30px); }
+  .review-post-header { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+  .review-post-meta { color: var(--text-muted); font-size: 12px; margin-bottom: 8px; }
+  .review-post-caption { font-size: 14px; line-height: 1.6; color: var(--text); white-space: pre-wrap; word-break: break-word; margin-bottom: 12px; max-height: 200px; overflow-y: auto; padding-right: 4px; }
+  .review-post-caption::-webkit-scrollbar { width: 4px; }
+  .review-post-caption::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .review-post-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .btn-approve { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 7px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-approve:hover { background: rgba(16,185,129,0.3); }
+  .btn-reject { background: rgba(239,68,68,0.12); color: var(--danger); border: 1px solid rgba(239,68,68,0.25); border-radius: 8px; padding: 7px 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-reject:hover { background: rgba(239,68,68,0.25); }
+  .btn-action-loading { opacity: 0.5; cursor: not-allowed; }
+
+  .badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+
   .calendar-day { margin-bottom: 16px; }
   .calendar-day-label { font-weight: 700; font-size: 16px; color: var(--primary); margin-bottom: 12px; }
   .calendar-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--bg); border-radius: 8px; margin-bottom: 6px; flex-wrap: wrap; }
   .calendar-type { width: 72px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; flex-shrink: 0; }
   .calendar-title { flex: 1; font-size: 13px; min-width: 200px; }
-  .badge { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
 
   .auto-item { display: flex; align-items: center; gap: 16px; padding: 14px 18px; background: var(--bg); border-radius: 10px; margin-bottom: 12px; flex-wrap: wrap; }
   .auto-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--success); box-shadow: 0 0 8px rgba(16,185,129,0.4); flex-shrink: 0; }
@@ -121,8 +193,11 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 
   .empty-state { text-align: center; padding: 32px; color: var(--text-muted); font-size: 14px; }
-
   .pillar-tag { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+
+  .refresh-indicator { display: inline-flex; align-items: center; gap: 6px; }
+  .refresh-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{ opacity:1; } 50%{ opacity:0.3; } }
 
   @media (max-width: 768px) {
     .content { padding: 16px; }
@@ -131,6 +206,13 @@
     .targets-grid { grid-template-columns: 1fr; }
     .stat-card { min-width: 140px; }
     .stat-value { font-size: 24px; }
+    .platform-progress-grid { grid-template-columns: 1fr; }
+    .today-cards { gap: 8px; }
+    .today-card { min-width: 100px; padding: 10px 12px; }
+    .today-card-value { font-size: 22px; }
+    .filter-bar, .review-filter-bar { flex-direction: column; align-items: stretch; }
+    .filter-bar select, .review-filter-bar select, .review-filter-bar input { min-width: auto; }
+    .filter-count { margin-left: 0; }
   }
 </style>
 </head>
@@ -155,13 +237,17 @@
     <div class="header-left">
       <div class="logo">P</div>
       <div>
-        <div class="header-title">Pikar AI â GTM Command Center</div>
+        <div class="header-title">Pikar AI &#x2665; GTM Command Center</div>
         <div class="header-sub" id="headerSub">Loading...</div>
       </div>
     </div>
     <div class="header-right">
+      <div class="refresh-indicator">
+        <div class="refresh-dot"></div>
+        <span class="last-refresh" id="lastRefreshLabel">Just refreshed</span>
+      </div>
       <div class="status-badge" id="statusBadge">Loading...</div>
-      <button class="refresh-btn" onclick="loadDashboardData()">â» Refresh</button>
+      <button class="refresh-btn" onclick="loadDashboardData()">&#x21bb; Refresh</button>
       <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
     </div>
   </div>
@@ -170,6 +256,7 @@
     <button class="tab active" data-tab="overview">Overview</button>
     <button class="tab" data-tab="pipeline">Content Pipeline</button>
     <button class="tab" data-tab="calendar">Calendar</button>
+    <button class="tab" data-tab="review">Review</button>
     <button class="tab" data-tab="automation">Automation</button>
   </div>
 
@@ -177,9 +264,59 @@
 
     <!-- OVERVIEW -->
     <div class="tab-panel active" id="overview">
+
+      <!-- TODAY ACTION PANEL -->
+      <div class="today-panel" id="todayPanel">
+        <div class="today-header">
+          <div class="today-title">&#x26A1; Today's Command</div>
+          <div class="today-date" id="todayDate"></div>
+        </div>
+        <div class="today-cards">
+          <div class="today-card">
+            <div class="today-card-value" id="todayPostsCount" style="color:var(--info)">-</div>
+            <div class="today-card-label">Posts Today</div>
+          </div>
+          <div class="today-card">
+            <div class="today-card-value" id="todayDraftCount" style="color:var(--warning)">-</div>
+            <div class="today-card-label">Pending Review</div>
+          </div>
+          <div class="today-card">
+            <div class="today-card-value" id="todayApprovedCount" style="color:var(--primary)">-</div>
+            <div class="today-card-label">Approved</div>
+          </div>
+          <div class="today-card">
+            <div class="today-card-value" id="todayPublishedCount" style="color:var(--success)">-</div>
+            <div class="today-card-label">Published</div>
+          </div>
+        </div>
+        <div class="today-actions">
+          <button class="btn-review" onclick="switchToReviewTab()">Review Drafts &rarr;</button>
+        </div>
+      </div>
+
       <div class="cards-row" id="statsCards">
         <div class="stat-card"><div class="loading"><div class="loading-spinner"></div></div></div>
       </div>
+
+      <!-- WEEKLY VOLUME TARGETS -->
+      <div class="weekly-progress-section" id="weeklyProgressSection" style="display:none">
+        <div class="overall-progress">
+          <div class="section-title">Weekly Volume Targets</div>
+          <div class="section-sub">Progress toward your 329-post weekly target</div>
+          <div class="overall-pct" id="overallPct">0%</div>
+          <div class="overall-meta" id="overallMeta"></div>
+          <div class="progress-track" style="height:12px;margin-top:8px;">
+            <div class="progress-fill" id="overallBar" style="width:0%;background:linear-gradient(90deg,var(--primary),var(--secondary))"></div>
+          </div>
+        </div>
+        <div class="platform-progress-grid" id="platformProgressGrid"></div>
+        <div class="pillar-bars-section">
+          <div class="section-title" style="margin-bottom:4px">Pillar Distribution</div>
+          <div class="section-sub">Posts per content pillar</div>
+          <div id="pillarBarsContainer"></div>
+        </div>
+      </div>
+
       <div class="charts-row">
         <div class="panel chart-main">
           <div class="section-title">Content by Pillar</div>
@@ -198,6 +335,14 @@
         <div class="section-sub">Posts per platform this batch</div>
         <div id="platformList"></div>
       </div>
+
+      <!-- FREEBIE PERFORMANCE -->
+      <div class="panel" id="freebieSection" style="display:none">
+        <div class="section-title">Freebie Keyword Performance</div>
+        <div class="section-sub">Keyword usage across content — sorted by most used</div>
+        <div class="freebie-grid" id="freebieGrid"></div>
+      </div>
+
     </div>
 
     <!-- CONTENT PIPELINE -->
@@ -227,8 +372,86 @@
     <!-- CALENDAR -->
     <div class="tab-panel" id="calendar">
       <div class="section-title">Content Calendar</div>
-      <div class="section-sub" style="margin-bottom:20px;">All scheduled content by day and platform</div>
+      <div class="section-sub" style="margin-bottom:16px;">All scheduled content by day and platform</div>
+
+      <div class="filter-bar" id="calendarFilterBar">
+        <span class="filter-label">Filter:</span>
+        <select id="calPlatformFilter" onchange="renderCalendar()">
+          <option value="">All Platforms</option>
+          <option value="twitter">Twitter/X</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="tiktok">TikTok</option>
+          <option value="youtube_shorts">YT Shorts</option>
+          <option value="instagram">Instagram</option>
+          <option value="facebook">Facebook</option>
+        </select>
+        <select id="calPillarFilter" onchange="renderCalendar()">
+          <option value="">All Pillars</option>
+          <option value="ai_business_ops">AI Business Ops</option>
+          <option value="ai_education">AI Education</option>
+          <option value="building_in_public">Building in Public</option>
+          <option value="founder_lessons">Founder Lessons</option>
+          <option value="product_building">Product Building</option>
+          <option value="segment_challenges">Segment Challenges</option>
+        </select>
+        <select id="calStatusFilter" onchange="renderCalendar()">
+          <option value="">All Statuses</option>
+          <option value="draft">Draft</option>
+          <option value="scheduled">Scheduled</option>
+          <option value="approved">Approved</option>
+          <option value="published">Published</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <span class="filter-count" id="calFilterCount"></span>
+      </div>
+
       <div id="calendarList"><div class="loading"><div class="loading-spinner"></div><div>Loading calendar...</div></div></div>
+    </div>
+
+    <!-- REVIEW TAB -->
+    <div class="tab-panel" id="review">
+      <div class="section-title">Content Review</div>
+      <div class="section-sub" style="margin-bottom:16px;">Approve or reject draft posts before publishing</div>
+
+      <div class="review-filter-bar" id="reviewFilterBar">
+        <select id="revPlatformFilter" onchange="renderReview()">
+          <option value="">All Platforms</option>
+          <option value="twitter">Twitter/X</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="tiktok">TikTok</option>
+          <option value="youtube_shorts">YT Shorts</option>
+          <option value="instagram">Instagram</option>
+          <option value="facebook">Facebook</option>
+        </select>
+        <select id="revPillarFilter" onchange="renderReview()">
+          <option value="">All Pillars</option>
+          <option value="ai_business_ops">AI Business Ops</option>
+          <option value="ai_education">AI Education</option>
+          <option value="building_in_public">Building in Public</option>
+          <option value="founder_lessons">Founder Lessons</option>
+          <option value="product_building">Product Building</option>
+          <option value="segment_challenges">Segment Challenges</option>
+        </select>
+        <select id="revTypeFilter" onchange="renderReview()">
+          <option value="">All Types</option>
+          <option value="post">Post</option>
+          <option value="thread">Thread</option>
+          <option value="carousel">Carousel</option>
+          <option value="reel_script">Reel Script</option>
+          <option value="story">Story</option>
+          <option value="short_script">Short Script</option>
+        </select>
+        <input type="text" id="revSearchInput" placeholder="Search captions..." oninput="renderReview()">
+      </div>
+
+      <div class="review-header-row">
+        <div class="review-count" id="reviewCount">Loading drafts...</div>
+        <button class="btn-approve-all" onclick="approveAllVisible()">&#10003; Approve All Visible</button>
+      </div>
+
+      <div id="reviewList">
+        <div class="loading"><div class="loading-spinner"></div><div>Loading drafts...</div></div>
+      </div>
     </div>
 
     <!-- AUTOMATION -->
@@ -291,6 +514,7 @@ function showDashboard() {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('dashboardScreen').style.display = 'block';
   loadDashboardData();
+  startAutoRefresh();
 }
 
 // Allow Enter key on login
@@ -304,8 +528,40 @@ document.querySelectorAll('.tab').forEach(btn => {
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById(btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'review') renderReview();
   });
 });
+
+function switchToReviewTab() {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector('[data-tab="review"]').classList.add('active');
+  document.getElementById('review').classList.add('active');
+  renderReview();
+}
+
+// ===== AUTO REFRESH =====
+let autoRefreshInterval = null;
+let lastRefreshTime = null;
+
+function startAutoRefresh() {
+  if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+  autoRefreshInterval = setInterval(() => {
+    loadDashboardData();
+  }, 60000);
+  updateRefreshLabel();
+  setInterval(updateRefreshLabel, 30000);
+}
+
+function updateRefreshLabel() {
+  if (!lastRefreshTime) return;
+  const diff = Math.round((Date.now() - lastRefreshTime) / 60000);
+  const label = document.getElementById('lastRefreshLabel');
+  if (!label) return;
+  if (diff < 1) label.textContent = 'Just refreshed';
+  else if (diff === 1) label.textContent = '1 min ago';
+  else label.textContent = diff + ' min ago';
+}
 
 // ===== COLORS =====
 const pillarColors = {
@@ -316,18 +572,27 @@ const pillarLabels = {
   ai_business_ops: 'AI Business Ops', ai_education: 'AI Education', founder_lessons: 'Founder Lessons',
   segment_challenges: 'Segment Challenges', building_in_public: 'Building in Public', product_building: 'Product Building'
 };
-const statusColors = { draft: '#f59e0b', review: '#3b82f6', approved: '#8b5cf6', scheduled: '#6366f1', published: '#10b981' };
-const platformLabels = { twitter: 'Twitter/X', linkedin: 'LinkedIn', tiktok: 'TikTok', youtube_shorts: 'YT Shorts', instagram: 'Instagram', facebook: 'Facebook' };
+const statusColors = {
+  draft: '#f59e0b', review: '#3b82f6', approved: '#8b5cf6',
+  scheduled: '#6366f1', published: '#10b981', rejected: '#ef4444'
+};
+const platformLabels = {
+  twitter: 'Twitter/X', linkedin: 'LinkedIn', tiktok: 'TikTok',
+  youtube_shorts: 'YT Shorts', instagram: 'Instagram', facebook: 'Facebook'
+};
+const platformColors = {
+  twitter: '#1d9bf0', linkedin: '#0a66c2', tiktok: '#ee1d52',
+  youtube_shorts: '#ff0000', instagram: '#e1306c', facebook: '#1877f2'
+};
 
 // ===== DATA LOADING =====
 let dashData = {};
 
 async function loadDashboardData() {
   try {
-    // Parallel queries
     const [batchRes, socialRes, blogRes, videoRes] = await Promise.all([
       sb.from('content_batches').select('*').order('batch_week', { ascending: false }),
-      sb.from('social_posts').select('id, platform, content_type, content_pillar, status, scheduled_date, scheduled_time, caption, freebie_keyword, freebie_name').order('scheduled_date').order('scheduled_time'),
+      sb.from('social_posts').select('id, platform, content_type, content_pillar, status, scheduled_date, scheduled_time, caption, freebie_keyword, freebie_name, freebie_link, engagement_metrics').order('scheduled_date').order('scheduled_time'),
       sb.from('blog_posts').select('id, title, category, content_pillar, status, scheduled_at, freebie_keyword, freebie_name, word_count'),
       sb.from('video_scripts').select('id, title, format, platform, content_pillar, status, scheduled_date, freebie_keyword, freebie_name, duration_seconds')
     ]);
@@ -337,11 +602,20 @@ async function loadDashboardData() {
     dashData.blogs = blogRes.data || [];
     dashData.videos = videoRes.data || [];
 
+    lastRefreshTime = Date.now();
+    updateRefreshLabel();
+
     renderOverview();
     renderPipeline();
     renderCalendar();
     renderAutomation();
     updateHeader();
+
+    // Re-render review if active
+    const reviewTab = document.getElementById('review');
+    if (reviewTab && reviewTab.classList.contains('active')) {
+      renderReview();
+    }
   } catch (err) {
     console.error('Dashboard load error:', err);
   }
@@ -352,8 +626,8 @@ function updateHeader() {
   if (latestBatch) {
     const week = new Date(latestBatch.batch_week);
     const weekNum = Math.ceil((week - new Date(week.getFullYear(), 0, 1)) / (7 * 86400000));
-    document.getElementById('headerSub').textContent = `Week ${weekNum} Â· Batch: ${latestBatch.generation_status}`;
-    document.getElementById('statusBadge').textContent = latestBatch.generation_status === 'complete' ? 'â Batch Complete' : latestBatch.generation_status;
+    document.getElementById('headerSub').textContent = 'Week ' + weekNum + ' \u00b7 Batch: ' + latestBatch.generation_status;
+    document.getElementById('statusBadge').textContent = latestBatch.generation_status === 'complete' ? '\u2714 Batch Complete' : latestBatch.generation_status;
     document.getElementById('statusBadge').style.background = latestBatch.generation_status === 'complete' ? 'rgba(16,185,129,0.13)' : 'rgba(245,158,11,0.13)';
     document.getElementById('statusBadge').style.color = latestBatch.generation_status === 'complete' ? 'var(--success)' : 'var(--warning)';
   }
@@ -367,19 +641,32 @@ function renderOverview() {
   const totalVideos = dashData.videos.length;
   const totalAll = totalSocial + dashData.blogs.length + totalVideos;
 
+  // Today action panel
+  const todayStr = new Date().toISOString().split('T')[0];
+  const todayPosts = dashData.social.filter(s => s.scheduled_date === todayStr);
+  const draftCount = dashData.social.filter(s => s.status === 'draft').length;
+  const approvedCount = dashData.social.filter(s => s.status === 'approved' || s.status === 'scheduled').length;
+  const publishedCount = dashData.social.filter(s => s.status === 'published').length;
+
+  const todayFormatted = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  document.getElementById('todayDate').textContent = todayFormatted;
+  document.getElementById('todayPostsCount').textContent = todayPosts.length;
+  document.getElementById('todayDraftCount').textContent = draftCount;
+  document.getElementById('todayApprovedCount').textContent = approvedCount;
+  document.getElementById('todayPublishedCount').textContent = publishedCount;
+
   // Stats cards
-  document.getElementById('statsCards').innerHTML = `
-    <div class="stat-card"><div class="stat-label">Total Content Pieces</div><div class="stat-value" style="color:var(--primary)">${totalAll}</div><div class="stat-sub">${totalSocial} social Â· ${totalBlogs} blogs Â· ${totalNewsletters} newsletters Â· ${totalVideos} videos</div></div>
-    <div class="stat-card"><div class="stat-label">Platforms Active</div><div class="stat-value" style="color:var(--success)">6</div><div class="stat-sub">Twitter, LinkedIn, TikTok, YT Shorts, IG, FB</div></div>
-    <div class="stat-card"><div class="stat-label">Daily Volume</div><div class="stat-value" style="color:var(--info)">${Math.round(totalSocial / 7)}</div><div class="stat-sub">posts/day average</div></div>
-    <div class="stat-card"><div class="stat-label">Freebie Keywords</div><div class="stat-value" style="color:var(--warning)">${new Set(dashData.social.map(s => s.freebie_keyword).filter(Boolean)).size}</div><div class="stat-sub">unique keywords in rotation</div></div>
-  `;
+  document.getElementById('statsCards').innerHTML =
+    '<div class="stat-card"><div class="stat-label">Total Content Pieces</div><div class="stat-value" style="color:var(--primary)">' + totalAll + '</div><div class="stat-sub">' + totalSocial + ' social \u00b7 ' + totalBlogs + ' blogs \u00b7 ' + totalNewsletters + ' newsletters \u00b7 ' + totalVideos + ' videos</div></div>' +
+    '<div class="stat-card"><div class="stat-label">Platforms Active</div><div class="stat-value" style="color:var(--success)">6</div><div class="stat-sub">Twitter, LinkedIn, TikTok, YT Shorts, IG, FB</div></div>' +
+    '<div class="stat-card"><div class="stat-label">Daily Volume</div><div class="stat-value" style="color:var(--info)">' + Math.round(totalSocial / 7) + '</div><div class="stat-sub">posts/day average</div></div>' +
+    '<div class="stat-card"><div class="stat-label">Freebie Keywords</div><div class="stat-value" style="color:var(--warning)">' + (new Set(dashData.social.map(s => s.freebie_keyword).filter(Boolean))).size + '</div><div class="stat-sub">unique keywords in rotation</div></div>';
 
   // Pillar chart
   const pillarCounts = {};
   dashData.social.forEach(s => { pillarCounts[s.content_pillar] = (pillarCounts[s.content_pillar] || 0) + 1; });
   const pillarData = Object.entries(pillarCounts).map(([key, value]) => ({
-    name: pillarLabels[key] || key, value, color: pillarColors[key] || '#94a3b8'
+    name: pillarLabels[key] || key, value, color: pillarColors[key] || '#94a3b8', key
   })).sort((a, b) => b.value - a.value);
   drawPillarChart(pillarData);
 
@@ -391,7 +678,7 @@ function renderOverview() {
     .sort((a, b) => b[1] - a[1])
     .map(([type, count]) => {
       const pct = Math.round((count / totalSocial) * 100);
-      return `<div class="progress-row"><div class="progress-header"><span class="progress-label">${typeLabels[type] || type}</span><span class="progress-count">${count} (${pct}%)</span></div><div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:var(--primary)"></div></div></div>`;
+      return '<div class="progress-row"><div class="progress-header"><span class="progress-label">' + (typeLabels[type] || type) + '</span><span class="progress-count">' + count + ' (' + pct + '%)</span></div><div class="progress-track"><div class="progress-fill" style="width:' + pct + '%;background:var(--primary)"></div></div></div>';
     }).join('');
 
   // Platform breakdown
@@ -403,7 +690,82 @@ function renderOverview() {
     const count = platCounts[p] || 0;
     const target = platTargets[p] || 0;
     const pct = target ? Math.min((count / target) * 100, 100) : 0;
-    return `<div class="platform-row"><div class="platform-name">${platformLabels[p] || p}</div><div class="platform-bar"><div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${pct >= 100 ? 'var(--success)' : 'var(--primary)'}"></div></div></div><div class="platform-count">${count}</div><div class="platform-target">/ ${target}</div></div>`;
+    return '<div class="platform-row"><div class="platform-name">' + (platformLabels[p] || p) + '</div><div class="platform-bar"><div class="progress-track"><div class="progress-fill" style="width:' + pct + '%;background:' + (pct >= 100 ? 'var(--success)' : 'var(--primary)') + '"></div></div></div><div class="platform-count">' + count + '</div><div class="platform-target">/ ' + target + '</div></div>';
+  }).join('');
+
+  // Weekly progress
+  renderWeeklyProgress(platCounts, platTargets, platOrder, totalSocial, pillarData);
+
+  // Freebie performance
+  renderFreebiePerformance();
+}
+
+// ===== WEEKLY PROGRESS =====
+function renderWeeklyProgress(platCounts, platTargets, platOrder, totalSocial, pillarData) {
+  const weeklyTarget = 329;
+  const overallPct = Math.min(Math.round((totalSocial / weeklyTarget) * 100), 100);
+
+  document.getElementById('weeklyProgressSection').style.display = 'block';
+  document.getElementById('overallPct').textContent = overallPct + '%';
+  document.getElementById('overallMeta').textContent = totalSocial + ' of ' + weeklyTarget + ' posts created';
+  document.getElementById('overallBar').style.width = overallPct + '%';
+
+  // Per-platform progress cards
+  const platTargetsAll = { twitter: 91, linkedin: 63, tiktok: 63, youtube_shorts: 42, instagram: 42, facebook: 28 };
+  document.getElementById('platformProgressGrid').innerHTML = platOrder.map(p => {
+    const count = platCounts[p] || 0;
+    const target = platTargetsAll[p] || 0;
+    const pct = target ? Math.min(Math.round((count / target) * 100), 100) : 0;
+    const color = pct >= 100 ? 'var(--success)' : 'var(--primary)';
+    return '<div class="platform-progress-card">' +
+      '<div class="platform-progress-header">' +
+        '<span class="platform-progress-name">' + (platformLabels[p] || p) + '</span>' +
+        '<span class="platform-progress-pct" style="color:' + color + '">' + pct + '%</span>' +
+      '</div>' +
+      '<div class="progress-header" style="margin-bottom:4px"><span style="font-size:12px;color:var(--text-muted)">' + count + ' / ' + target + '</span></div>' +
+      '<div class="progress-track"><div class="progress-fill" style="width:' + pct + '%;background:' + color + '"></div></div>' +
+    '</div>';
+  }).join('');
+
+  // Pillar bars
+  const maxPillarCount = Math.max(...pillarData.map(d => d.value), 1);
+  document.getElementById('pillarBarsContainer').innerHTML = pillarData.map(d => {
+    const barPct = Math.round((d.value / maxPillarCount) * 100);
+    return '<div class="pillar-bar-row">' +
+      '<div class="pillar-bar-label">' + d.name + '</div>' +
+      '<div class="pillar-bar-track"><div class="pillar-bar-fill" style="width:' + barPct + '%;background:' + d.color + '"></div></div>' +
+      '<div class="pillar-bar-count">' + d.value + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ===== FREEBIE PERFORMANCE =====
+function renderFreebiePerformance() {
+  const kwData = {};
+  dashData.social.forEach(s => {
+    if (!s.freebie_keyword) return;
+    const kw = s.freebie_keyword;
+    if (!kwData[kw]) {
+      kwData[kw] = { keyword: kw, name: s.freebie_name || '', count: 0, platforms: new Set() };
+    }
+    kwData[kw].count++;
+    kwData[kw].platforms.add(s.platform);
+  });
+
+  const sorted = Object.values(kwData).sort((a, b) => b.count - a.count);
+  if (sorted.length === 0) return;
+
+  document.getElementById('freebieSection').style.display = 'block';
+  document.getElementById('freebieGrid').innerHTML = sorted.map(kw => {
+    const platformBadges = Array.from(kw.platforms).map(p =>
+      '<span class="freebie-platform-badge">' + (platformLabels[p] || p) + '</span>'
+    ).join('');
+    return '<div class="freebie-card">' +
+      '<div class="freebie-keyword">' + kw.keyword + '</div>' +
+      '<div class="freebie-name">' + (kw.name || 'No name') + '</div>' +
+      '<div class="freebie-count">' + kw.count + ' post' + (kw.count !== 1 ? 's' : '') + '</div>' +
+      '<div class="freebie-platforms">' + platformBadges + '</div>' +
+    '</div>';
   }).join('');
 }
 
@@ -430,7 +792,6 @@ function drawPillarChart(data) {
     angle += slice;
   });
 
-  // Center text
   ctx.fillStyle = '#f8fafc'; ctx.font = 'bold 24px Inter, sans-serif'; ctx.textAlign = 'center';
   ctx.fillText(total, cx, cy - 4);
   ctx.fillStyle = '#94a3b8'; ctx.font = '11px Inter, sans-serif';
@@ -438,29 +799,27 @@ function drawPillarChart(data) {
 
   document.getElementById('pillarLegend').innerHTML = data.map(d => {
     const pct = Math.round((d.value / total) * 100);
-    return `<span class="pie-legend-item"><span class="pie-legend-dot" style="background:${d.color}"></span><span style="color:${d.color}">${d.name} (${pct}%)</span></span>`;
+    return '<span class="pie-legend-item"><span class="pie-legend-dot" style="background:' + d.color + '"></span><span style="color:' + d.color + '">' + d.name + ' (' + pct + '%)</span></span>';
   }).join('');
 }
 
 // ===== PIPELINE =====
 function renderPipeline() {
-  // Batch table
   document.getElementById('batchTable').innerHTML = dashData.batches.map(b => {
     const statusColor = b.generation_status === 'complete' ? 'var(--success)' : 'var(--warning)';
     const reviewColor = b.review_status === 'approved' ? 'var(--success)' : 'var(--warning)';
-    return `<tr>
-      <td style="font-weight:600">${b.batch_week}</td>
-      <td><span style="color:${statusColor};font-weight:600">${b.generation_status}</span></td>
-      <td>${b.blog_count || 0}</td>
-      <td>${b.social_count || 0}</td>
-      <td>${b.newsletter_count || 0}</td>
-      <td>${b.video_count || 0}</td>
-      <td style="font-weight:700">${b.total_pieces || 0}</td>
-      <td><span style="color:${reviewColor}">${b.review_status || '-'}</span></td>
-    </tr>`;
+    return '<tr>' +
+      '<td style="font-weight:600">' + b.batch_week + '</td>' +
+      '<td><span style="color:' + statusColor + ';font-weight:600">' + b.generation_status + '</span></td>' +
+      '<td>' + (b.blog_count || 0) + '</td>' +
+      '<td>' + (b.social_count || 0) + '</td>' +
+      '<td>' + (b.newsletter_count || 0) + '</td>' +
+      '<td>' + (b.video_count || 0) + '</td>' +
+      '<td style="font-weight:700">' + (b.total_pieces || 0) + '</td>' +
+      '<td><span style="color:' + reviewColor + '">' + (b.review_status || '-') + '</span></td>' +
+    '</tr>';
   }).join('') || '<tr><td colspan="8" class="empty-state">No batches yet</td></tr>';
 
-  // Status breakdown
   const statusCounts = {};
   dashData.social.forEach(s => { statusCounts[s.status] = (statusCounts[s.status] || 0) + 1; });
   const total = dashData.social.length;
@@ -468,58 +827,210 @@ function renderPipeline() {
     .sort((a, b) => b[1] - a[1])
     .map(([status, count]) => {
       const pct = Math.round((count / total) * 100);
-      return `<div class="progress-row"><div class="progress-header"><span class="progress-label" style="text-transform:capitalize">${status}</span><span class="progress-count">${count} (${pct}%)</span></div><div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${statusColors[status] || 'var(--muted)'}"></div></div></div>`;
+      return '<div class="progress-row"><div class="progress-header"><span class="progress-label" style="text-transform:capitalize">' + status + '</span><span class="progress-count">' + count + ' (' + pct + '%)</span></div><div class="progress-track"><div class="progress-fill" style="width:' + pct + '%;background:' + (statusColors[status] || 'var(--muted)') + '"></div></div></div>';
     }).join('');
 
-  // Keyword breakdown
   const kwCounts = {};
   dashData.social.forEach(s => { if (s.freebie_keyword) kwCounts[s.freebie_keyword] = (kwCounts[s.freebie_keyword] || 0) + 1; });
-  document.getElementById('keywordBreakdown').innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:8px;">` +
+  document.getElementById('keywordBreakdown').innerHTML = '<div style="display:flex;flex-wrap:wrap;gap:8px;">' +
     Object.entries(kwCounts).sort((a, b) => b[1] - a[1]).map(([kw, count]) => {
-      return `<div style="background:var(--bg);padding:8px 14px;border-radius:8px;text-align:center"><div style="font-weight:700;font-size:16px;color:var(--primary)">${count}</div><div style="font-size:11px;color:var(--text-muted);font-weight:600">${kw}</div></div>`;
-    }).join('') + `</div>`;
+      return '<div style="background:var(--bg);padding:8px 14px;border-radius:8px;text-align:center"><div style="font-weight:700;font-size:16px;color:var(--primary)">' + count + '</div><div style="font-size:11px;color:var(--text-muted);font-weight:600">' + kw + '</div></div>';
+    }).join('') + '</div>';
 }
 
 // ===== CALENDAR =====
 function renderCalendar() {
+  const platformFilter = document.getElementById('calPlatformFilter') ? document.getElementById('calPlatformFilter').value : '';
+  const pillarFilter = document.getElementById('calPillarFilter') ? document.getElementById('calPillarFilter').value : '';
+  const statusFilter = document.getElementById('calStatusFilter') ? document.getElementById('calStatusFilter').value : '';
+
+  let filtered = dashData.social || [];
+  if (platformFilter) filtered = filtered.filter(s => s.platform === platformFilter);
+  if (pillarFilter) filtered = filtered.filter(s => s.content_pillar === pillarFilter);
+  if (statusFilter) filtered = filtered.filter(s => s.status === statusFilter);
+
+  const total = (dashData.social || []).length;
+  const countEl = document.getElementById('calFilterCount');
+  if (countEl) countEl.textContent = 'Showing ' + filtered.length + ' of ' + total + ' posts';
+
   const dayGroups = {};
   const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-  dashData.social.forEach(s => {
+  filtered.forEach(s => {
     if (!s.scheduled_date) return;
-    const date = s.scheduled_date;
-    if (!dayGroups[date]) dayGroups[date] = [];
-    dayGroups[date].push(s);
+    if (!dayGroups[s.scheduled_date]) dayGroups[s.scheduled_date] = [];
+    dayGroups[s.scheduled_date].push(s);
   });
 
   const sortedDates = Object.keys(dayGroups).sort();
   if (sortedDates.length === 0) {
-    document.getElementById('calendarList').innerHTML = '<div class="empty-state">No scheduled content yet</div>';
+    document.getElementById('calendarList').innerHTML = '<div class="empty-state">No content matches your filters</div>';
     return;
   }
 
   document.getElementById('calendarList').innerHTML = sortedDates.map(date => {
     const d = new Date(date + 'T00:00:00');
     const dayName = dayNames[d.getUTCDay()];
-    const dateLabel = `${dayName}, ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })}`;
+    const dateLabel = dayName + ', ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
     const items = dayGroups[date].sort((a, b) => (a.scheduled_time || '').localeCompare(b.scheduled_time || ''));
 
-    return `<div class="panel"><div class="calendar-day-label">${dateLabel} <span style="color:var(--text-muted);font-size:13px;font-weight:400">(${items.length} posts)</span></div>${
+    return '<div class="panel"><div class="calendar-day-label">' + dateLabel + ' <span style="color:var(--text-muted);font-size:13px;font-weight:400">(' + items.length + ' posts)</span></div>' +
       items.slice(0, 15).map(item => {
         const time = item.scheduled_time ? item.scheduled_time.slice(0, 5) : '';
         const preview = item.caption ? item.caption.substring(0, 80).replace(/\n/g, ' ') + '...' : '';
         const pColor = pillarColors[item.content_pillar] || '#94a3b8';
-        return `<div class="calendar-item">
-          <span class="calendar-type">${time}</span>
-          <span style="width:70px;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;flex-shrink:0">${platformLabels[item.platform] || item.platform}</span>
-          <span class="calendar-title">${preview}</span>
-          <span class="badge" style="background:${pColor}22;color:${pColor}">${item.content_type}</span>
-          ${item.freebie_keyword ? `<span class="badge" style="background:rgba(86,171,145,0.15);color:var(--primary)">${item.freebie_keyword}</span>` : ''}
-        </div>`;
+        const sColor = statusColors[item.status] || '#94a3b8';
+        return '<div class="calendar-item">' +
+          '<span class="calendar-type">' + time + '</span>' +
+          '<span style="width:70px;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;flex-shrink:0">' + (platformLabels[item.platform] || item.platform) + '</span>' +
+          '<span class="calendar-title">' + preview + '</span>' +
+          '<span class="badge" style="background:' + pColor + '22;color:' + pColor + '">' + item.content_type + '</span>' +
+          '<span class="badge" style="background:' + sColor + '22;color:' + sColor + '">' + item.status + '</span>' +
+          (item.freebie_keyword ? '<span class="badge" style="background:rgba(86,171,145,0.15);color:var(--primary)">' + item.freebie_keyword + '</span>' : '') +
+        '</div>';
       }).join('') +
-      (items.length > 15 ? `<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:8px">+ ${items.length - 15} more posts</div>` : '')
-    }</div>`;
+      (items.length > 15 ? '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:8px">+ ' + (items.length - 15) + ' more posts</div>' : '') +
+    '</div>';
   }).join('');
+}
+
+// ===== REVIEW TAB =====
+function getFilteredDrafts() {
+  const platform = document.getElementById('revPlatformFilter') ? document.getElementById('revPlatformFilter').value : '';
+  const pillar = document.getElementById('revPillarFilter') ? document.getElementById('revPillarFilter').value : '';
+  const type = document.getElementById('revTypeFilter') ? document.getElementById('revTypeFilter').value : '';
+  const search = document.getElementById('revSearchInput') ? document.getElementById('revSearchInput').value.toLowerCase() : '';
+
+  return (dashData.social || []).filter(s => {
+    if (s.status !== 'draft') return false;
+    if (platform && s.platform !== platform) return false;
+    if (pillar && s.content_pillar !== pillar) return false;
+    if (type && s.content_type !== type) return false;
+    if (search && !(s.caption || '').toLowerCase().includes(search)) return false;
+    return true;
+  });
+}
+
+function renderReview() {
+  const drafts = getFilteredDrafts();
+  const countEl = document.getElementById('reviewCount');
+  if (countEl) countEl.textContent = drafts.length + ' draft' + (drafts.length !== 1 ? 's' : '') + ' pending review';
+
+  if (drafts.length === 0) {
+    document.getElementById('reviewList').innerHTML = '<div class="empty-state">No draft posts match your filters. All caught up!</div>';
+    return;
+  }
+
+  document.getElementById('reviewList').innerHTML = drafts.map(post => {
+    const pColor = pillarColors[post.content_pillar] || '#94a3b8';
+    const platColor = platformColors[post.platform] || '#94a3b8';
+    const dateStr = post.scheduled_date ? (post.scheduled_date + (post.scheduled_time ? ' ' + post.scheduled_time.slice(0, 5) : '')) : 'No date';
+
+    return '<div class="review-post" id="review-post-' + post.id + '">' +
+      '<div class="review-post-header">' +
+        '<span class="badge" style="background:' + platColor + '22;color:' + platColor + '">' + (platformLabels[post.platform] || post.platform) + '</span>' +
+        '<span class="badge" style="background:var(--bg);color:var(--text-muted)">' + post.content_type + '</span>' +
+        '<span class="badge" style="background:' + pColor + '22;color:' + pColor + '">' + (pillarLabels[post.content_pillar] || post.content_pillar) + '</span>' +
+        (post.freebie_keyword ? '<span class="badge" style="background:rgba(86,171,145,0.15);color:var(--primary)">' + post.freebie_keyword + '</span>' : '') +
+      '</div>' +
+      '<div class="review-post-meta">' + dateStr + '</div>' +
+      '<div class="review-post-caption">' + (post.caption || 'No caption') + '</div>' +
+      '<div class="review-post-actions">' +
+        '<button class="btn-approve" id="btn-approve-' + post.id + '" onclick="approvePost(\'' + post.id + '\')">&#10003; Approve</button>' +
+        '<button class="btn-reject" id="btn-reject-' + post.id + '" onclick="rejectPost(\'' + post.id + '\')">&#10007; Reject</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+async function approvePost(postId) {
+  const approveBtn = document.getElementById('btn-approve-' + postId);
+  const rejectBtn = document.getElementById('btn-reject-' + postId);
+  if (approveBtn) { approveBtn.classList.add('btn-action-loading'); approveBtn.disabled = true; }
+  if (rejectBtn) { rejectBtn.disabled = true; }
+
+  try {
+    const { error } = await sb.from('social_posts').update({ status: 'scheduled' }).eq('id', postId);
+    if (error) throw error;
+
+    // Update local data
+    const post = dashData.social.find(s => s.id === postId);
+    if (post) post.status = 'scheduled';
+
+    removePostFromReview(postId);
+  } catch (err) {
+    console.error('Approve error:', err);
+    if (approveBtn) { approveBtn.classList.remove('btn-action-loading'); approveBtn.disabled = false; }
+    if (rejectBtn) { rejectBtn.disabled = false; }
+  }
+}
+
+async function rejectPost(postId) {
+  const approveBtn = document.getElementById('btn-approve-' + postId);
+  const rejectBtn = document.getElementById('btn-reject-' + postId);
+  if (rejectBtn) { rejectBtn.classList.add('btn-action-loading'); rejectBtn.disabled = true; }
+  if (approveBtn) { approveBtn.disabled = true; }
+
+  try {
+    const { error } = await sb.from('social_posts').update({ status: 'rejected' }).eq('id', postId);
+    if (error) throw error;
+
+    const post = dashData.social.find(s => s.id === postId);
+    if (post) post.status = 'rejected';
+
+    removePostFromReview(postId);
+  } catch (err) {
+    console.error('Reject error:', err);
+    if (rejectBtn) { rejectBtn.classList.remove('btn-action-loading'); rejectBtn.disabled = false; }
+    if (approveBtn) { approveBtn.disabled = false; }
+  }
+}
+
+function removePostFromReview(postId) {
+  const el = document.getElementById('review-post-' + postId);
+  if (el) {
+    el.classList.add('removing');
+    setTimeout(() => {
+      el.remove();
+      const remaining = getFilteredDrafts();
+      const countEl = document.getElementById('reviewCount');
+      if (countEl) countEl.textContent = remaining.length + ' draft' + (remaining.length !== 1 ? 's' : '') + ' pending review';
+      if (remaining.length === 0) {
+        document.getElementById('reviewList').innerHTML = '<div class="empty-state">All caught up! No more drafts to review.</div>';
+      }
+      // Update today panel counts
+      const draftCount = dashData.social.filter(s => s.status === 'draft').length;
+      const approvedCount = dashData.social.filter(s => s.status === 'approved' || s.status === 'scheduled').length;
+      const publishedCount = dashData.social.filter(s => s.status === 'published').length;
+      const dc = document.getElementById('todayDraftCount');
+      const ac = document.getElementById('todayApprovedCount');
+      const pc = document.getElementById('todayPublishedCount');
+      if (dc) dc.textContent = draftCount;
+      if (ac) ac.textContent = approvedCount;
+      if (pc) pc.textContent = publishedCount;
+    }, 320);
+  }
+}
+
+async function approveAllVisible() {
+  const drafts = getFilteredDrafts();
+  if (drafts.length === 0) return;
+
+  const btn = document.querySelector('.btn-approve-all');
+  if (btn) { btn.disabled = true; btn.textContent = 'Approving...'; }
+
+  for (const post of drafts) {
+    try {
+      await sb.from('social_posts').update({ status: 'scheduled' }).eq('id', post.id);
+      post.status = 'scheduled';
+      removePostFromReview(post.id);
+      await new Promise(r => setTimeout(r, 80));
+    } catch (err) {
+      console.error('Bulk approve error for', post.id, err);
+    }
+  }
+
+  if (btn) { btn.disabled = false; btn.textContent = '\u2713 Approve All Visible'; }
 }
 
 // ===== AUTOMATION =====
@@ -531,29 +1042,29 @@ function renderAutomation() {
   ];
 
   document.getElementById('autoList').innerHTML = automations.map(a =>
-    `<div class="auto-item"><div class="auto-dot"></div><div class="auto-info"><div class="auto-name">${a.name}</div><div class="auto-schedule">${a.schedule} Â· ${a.desc}</div></div></div>`
+    '<div class="auto-item"><div class="auto-dot"></div><div class="auto-info"><div class="auto-name">' + a.name + '</div><div class="auto-schedule">' + a.schedule + ' \u00b7 ' + a.desc + '</div></div></div>'
   ).join('');
 
   const steps = [
-    { n: '1', title: 'Sunday 6pm â Volume Blitz Batch Generated', desc: 'AI generates ~330+ content pieces: 5 blogs, 300+ social posts (6 platforms), 3 newsletters, 15 video scripts. Every piece has a freebie CTA with ManyChat-compatible keywords. All saved as drafts.' },
-    { n: '2', title: 'Weekdays 7am â Daily Social Queue (45-55 posts)', desc: 'Each morning: Twitter 13, LinkedIn 9, TikTok 9, YT Shorts 6, Instagram 6 (ManyChat auto-DM), Facebook 4. Each with HookâTeachâProveâFreebie CTA.' },
-    { n: '3', title: 'Monday 8am â Weekly GTM Report', desc: 'Volume scorecard, pillar distribution, platform hit rates, freebie conversion tracking, and what to double down on.' },
-    { n: '4', title: 'You â The Manager', desc: 'Review batches, approve posts, record videos from scripts, monitor ManyChat DM flows, cut losers, amplify winners.' }
+    { n: '1', title: 'Sunday 6pm \u2014 Volume Blitz Batch Generated', desc: 'AI generates ~330+ content pieces: 5 blogs, 300+ social posts (6 platforms), 3 newsletters, 15 video scripts. Every piece has a freebie CTA with ManyChat-compatible keywords. All saved as drafts.' },
+    { n: '2', title: 'Weekdays 7am \u2014 Daily Social Queue (45-55 posts)', desc: 'Each morning: Twitter 13, LinkedIn 9, TikTok 9, YT Shorts 6, Instagram 6 (ManyChat auto-DM), Facebook 4. Each with Hook\u2192Teach\u2192Prove\u2192Freebie CTA.' },
+    { n: '3', title: 'Monday 8am \u2014 Weekly GTM Report', desc: 'Volume scorecard, pillar distribution, platform hit rates, freebie conversion tracking, and what to double down on.' },
+    { n: '4', title: 'You \u2014 The Manager', desc: 'Review batches, approve posts, record videos from scripts, monitor ManyChat DM flows, cut losers, amplify winners.' }
   ];
 
   document.getElementById('stepsList').innerHTML = steps.map(s =>
-    `<div class="step-row"><div class="step-num">${s.n}</div><div><div class="step-title">${s.title}</div><div class="step-desc">${s.desc}</div></div></div>`
+    '<div class="step-row"><div class="step-num">' + s.n + '</div><div><div class="step-title">' + s.title + '</div><div class="step-desc">' + s.desc + '</div></div></div>'
   ).join('');
 
   const routines = [
-    { day: 'Monday', task: 'Review GTM report + volume scorecard. Approve Monday\'s 45-55 posts. Flag winning angles + top freebies.', time: '45 min' },
+    { day: 'Monday', task: "Review GTM report + volume scorecard. Approve Monday's 45-55 posts. Flag winning angles + top freebies.", time: '45 min' },
     { day: 'Tue-Thu', task: 'Approve daily social queues (45-55 posts). Check ManyChat DMs and freebie delivery.', time: '25 min/day' },
     { day: 'Wednesday', task: 'Record 2 long-form videos + batch-record 5-8 short-form clips from scripts.', time: '90 min' },
     { day: 'Friday', task: 'Review weekend content. Approve Saturday newsletter. Check freebie conversion data.', time: '30 min' }
   ];
 
   document.getElementById('routineGrid').innerHTML = routines.map(r =>
-    `<div class="routine-card"><div class="routine-header"><span class="routine-day">${r.day}</span><span class="routine-time">${r.time}</span></div><div class="routine-task">${r.task}</div></div>`
+    '<div class="routine-card"><div class="routine-header"><span class="routine-day">' + r.day + '</span><span class="routine-time">' + r.time + '</span></div><div class="routine-task">' + r.task + '</div></div>'
   ).join('');
 }
 
